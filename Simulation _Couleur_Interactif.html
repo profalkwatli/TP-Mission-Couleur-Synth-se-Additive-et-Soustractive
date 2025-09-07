@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mission Couleur – Version Ludique</title>
+  <style>
+    body { font-family: 'Trebuchet MS', sans-serif; background: #121212; color: #f0f0f0; text-align: center; margin: 0; }
+    h1 { color: #ffcc00; padding: 20px; text-shadow: 2px 2px 4px #000; }
+    section { margin: 30px auto; padding: 20px; background: #1e1e1e; border-radius: 15px; width: 85%; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+    h2 { color: #00e5ff; text-shadow: 1px 1px 3px #000; }
+    canvas { border: 2px solid #555; margin-top: 15px; border-radius: 10px; transition: transform 0.3s ease; }
+    canvas:hover { transform: scale(1.05); }
+    .controls { margin: 15px; }
+    label { margin: 0 15px; font-size: 1.1em; cursor: pointer; }
+    input[type="checkbox"], select { transform: scale(1.2); margin-left: 8px; }
+    select { padding: 5px; border-radius: 5px; border: none; }
+  </style>
+</head>
+<body>
+  <h1>🎮 Mission Couleur – Synthèse Additive et Soustractive <span style="display:block; font-size:15px; font-weight:normal;">
+    (Developed by Prof. AL KWATLI) 
+  </span>
+  <span style="display:block; font-size:15px; font-weight:normal;">
+    E-mail: dr.alkwatli@gmail.com
+  </span>
+ </h1>
+
+  <!-- Module 1 -->
+  <section>
+    <h2>🌈 Synthèse additive (RVB)</h2>
+    <p>Active les projecteurs de lumière pour voir les mélanges :</p>
+    <div class="controls">
+      <label style="color:#ff4444;"><input type="checkbox" id="red"> Rouge</label>
+      <label style="color:#44ff44;"><input type="checkbox" id="green"> Vert</label>
+      <label style="color:#4488ff;"><input type="checkbox" id="blue"> Bleu</label>
+    </div>
+    <canvas id="additive" width="400" height="400"></canvas>
+  </section>
+
+  <!-- Module 2 -->
+  <section>
+    <h2>🧪 Synthèse soustractive (CMJ)</h2>
+    <p>Ajoute des filtres colorés devant la lumière :</p>
+    <div class="controls">
+      <label style="color:#00ffff;"><input type="checkbox" id="cyan"> Cyan</label>
+      <label style="color:#ff44ff;"><input type="checkbox" id="magenta"> Magenta</label>
+      <label style="color:#ffff44;"><input type="checkbox" id="yellow"> Jaune</label>
+    </div>
+    <canvas id="subtractive" width="400" height="200"></canvas>
+  </section>
+
+  <!-- Module 3 -->
+  <section>
+    <h2>🔎 Perception d’un objet coloré</h2>
+    <p>Choisis un objet et une lumière :</p>
+    <div class="controls">
+      <label>Objet :
+        <select id="objectColor">
+          <option value="red">Rouge</option>
+          <option value="green">Vert</option>
+          <option value="blue">Bleu</option>
+          <option value="yellow">Jaune</option>
+        </select>
+      </label>
+      <label>Lumière :
+        <select id="lightColor">
+          <option value="white">Blanche</option>
+          <option value="red">Rouge</option>
+          <option value="green">Verte</option>
+          <option value="blue">Bleue</option>
+        </select>
+      </label>
+    </div>
+    <canvas id="perception" width="200" height="200"></canvas>
+  </section>
+
+  <script>
+    // === Module 1 : Additive (RVB) ===
+    const canvasAdd = document.getElementById('additive');
+    const ctxAdd = canvasAdd.getContext('2d');
+    const checksAdd = {
+      red: document.getElementById('red'),
+      green: document.getElementById('green'),
+      blue: document.getElementById('blue')
+    };
+    function drawAdditive() {
+      ctxAdd.fillStyle = "black";
+      ctxAdd.fillRect(0, 0, 400, 400);
+      if (checksAdd.red.checked) {
+        ctxAdd.fillStyle = "rgba(255,0,0,0.5)";
+        ctxAdd.beginPath(); ctxAdd.arc(200, 150, 100, 0, Math.PI*2); ctxAdd.fill();
+      }
+      if (checksAdd.green.checked) {
+        ctxAdd.fillStyle = "rgba(0,255,0,0.5)";
+        ctxAdd.beginPath(); ctxAdd.arc(150, 250, 100, 0, Math.PI*2); ctxAdd.fill();
+      }
+      if (checksAdd.blue.checked) {
+        ctxAdd.fillStyle = "rgba(0,0,255,0.5)";
+        ctxAdd.beginPath(); ctxAdd.arc(250, 250, 100, 0, Math.PI*2); ctxAdd.fill();
+      }
+    }
+    Object.values(checksAdd).forEach(cb => cb.addEventListener('change', drawAdditive));
+    drawAdditive();
+
+    // === Module 2 : Subtractive (CMJ) ===
+    const canvasSub = document.getElementById('subtractive');
+    const ctxSub = canvasSub.getContext('2d');
+    const checksSub = {
+      cyan: document.getElementById('cyan'),
+      magenta: document.getElementById('magenta'),
+      yellow: document.getElementById('yellow')
+    };
+    function drawSubtractive() {
+      let r = 255, g = 255, b = 255; // lumière blanche
+      if (checksSub.cyan.checked) r = 0;
+      if (checksSub.magenta.checked) g = 0;
+      if (checksSub.yellow.checked) b = 0;
+      ctxSub.fillStyle = `rgb(${r},${g},${b})`;
+      ctxSub.fillRect(0, 0, 400, 200);
+    }
+    Object.values(checksSub).forEach(cb => cb.addEventListener('change', drawSubtractive));
+    drawSubtractive();
+
+    // === Module 3 : Perception d’objets ===
+    const canvasPer = document.getElementById('perception');
+    const ctxPer = canvasPer.getContext('2d');
+    const objectSelect = document.getElementById('objectColor');
+    const lightSelect = document.getElementById('lightColor');
+
+    function drawPerception() {
+      let object = objectSelect.value;
+      let light = lightSelect.value;
+
+      let colors = {
+        red: [255,0,0],
+        green: [0,255,0],
+        blue: [0,0,255],
+        yellow: [255,255,0],
+        white: [255,255,255]
+      };
+      let objRGB = colors[object];
+      let lightRGB = colors[light];
+
+      let result = [
+        objRGB[0] > 0 ? lightRGB[0] : 0,
+        objRGB[1] > 0 ? lightRGB[1] : 0,
+        objRGB[2] > 0 ? lightRGB[2] : 0
+      ];
+
+      ctxPer.fillStyle = `rgb(${result[0]},${result[1]},${result[2]})`;
+      ctxPer.fillRect(0, 0, 200, 200);
+    }
+    objectSelect.addEventListener('change', drawPerception);
+    lightSelect.addEventListener('change', drawPerception);
+    drawPerception();
+  </script>
+</body>
+</html>
