@@ -1,181 +1,22 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Mission Couleur – Version Ludique</title>
-  <style>
-    body { font-family: 'Trebuchet MS', sans-serif; background: #121212; color: #f0f0f0; text-align: center; margin: 0; }
-    h1 { color: #ffcc00; padding: 20px; text-shadow: 2px 2px 4px #000; }
-    section { margin: 30px auto; padding: 20px; background: #1e1e1e; border-radius: 15px; width: 85%; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
-    h2 { color: #00e5ff; text-shadow: 1px 1px 3px #000; }
-    canvas { border: 2px solid #555; margin-top: 15px; border-radius: 10px; transition: transform 0.3s ease; }
-    canvas:hover { transform: scale(1.05); }
-    .controls { margin: 15px; }
-    label { margin: 0 15px; font-size: 1.1em; cursor: pointer; }
-    input[type="checkbox"], select { transform: scale(1.2); margin-left: 8px; }
-    select { padding: 5px; border-radius: 5px; border: none; }
-  </style>
+<meta charset="UTF-8">
+<title>App Loader</title>
 </head>
 <body>
-  <h1>🎮 Mission Couleur – Synthèse Additive et Soustractive <span style="display:block; font-size:15px; font-weight:normal;">
-    (Developed by Prof. AL KWATLI) 
-  </span>
-  <span style="display:block; font-size:15px; font-weight:normal;">
-    E-mail: dr.alkwatli@gmail.com
-  </span>
- </h1>
-
-  <!-- Module 1 -->
-  <section>
-    <h2>🌈 Synthèse additive (RVB)</h2>
-    <p>Active les projecteurs de lumière pour voir les mélanges :</p>
-    <div class="controls">
-      <label style="color:#ff4444;"><input type="checkbox" id="red"> Rouge</label>
-      <label style="color:#44ff44;"><input type="checkbox" id="green"> Vert</label>
-      <label style="color:#4488ff;"><input type="checkbox" id="blue"> Bleu</label>
-    </div>
-    <canvas id="additive" width="400" height="400"></canvas>
-  </section>
-
-  <!-- Module 2 -->
-  <section>
-    <h2>🧪 Synthèse soustractive (CMJ)</h2>
-    <p>Ajoute des filtres colorés devant la lumière :</p>
-    <div class="controls">
-      <label style="color:#00ffff;"><input type="checkbox" id="cyan"> Cyan</label>
-      <label style="color:#ff44ff;"><input type="checkbox" id="magenta"> Magenta</label>
-      <label style="color:#ffff44;"><input type="checkbox" id="yellow"> Jaune</label>
-    </div>
-    <canvas id="subtractive" width="400" height="200"></canvas>
-  </section>
-
-  <!-- Module 3 -->
-  <section>
-    <h2>🔎 Perception d’un objet coloré</h2>
-    <p>Choisis un objet et une lumière :</p>
-    <div class="controls">
-      <label>Objet :
-        <select id="objectColor">
-          <option value="red">Rouge</option>
-          <option value="green">Vert</option>
-          <option value="blue">Bleu</option>
-          <option value="yellow">Jaune</option>
-        </select>
-      </label>
-      <label>Lumière :
-        <select id="lightColor">
-          <option value="white">Blanche</option>
-          <option value="red">Rouge</option>
-          <option value="green">Verte</option>
-          <option value="blue">Bleue</option>
-        </select>
-      </label>
-    </div>
-    <canvas id="perception" width="200" height="200"></canvas>
-  </section>
-
-  <script>
-    // === Module 1 : Additive (RVB) ===
-    const canvasAdd = document.getElementById('additive');
-    const ctxAdd = canvasAdd.getContext('2d');
-    const checksAdd = {
-      red: document.getElementById('red'),
-      green: document.getElementById('green'),
-      blue: document.getElementById('blue')
-    };
-    function drawAdditive() {
-      ctxAdd.fillStyle = "black";
-      ctxAdd.fillRect(0, 0, 400, 400);
-      if (checksAdd.red.checked) {
-        ctxAdd.fillStyle = "rgba(255,0,0,0.5)";
-        ctxAdd.beginPath(); ctxAdd.arc(200, 150, 100, 0, Math.PI*2); ctxAdd.fill();
-      }
-      if (checksAdd.green.checked) {
-        ctxAdd.fillStyle = "rgba(0,255,0,0.5)";
-        ctxAdd.beginPath(); ctxAdd.arc(150, 250, 100, 0, Math.PI*2); ctxAdd.fill();
-      }
-      if (checksAdd.blue.checked) {
-        ctxAdd.fillStyle = "rgba(0,0,255,0.5)";
-        ctxAdd.beginPath(); ctxAdd.arc(250, 250, 100, 0, Math.PI*2); ctxAdd.fill();
-      }
-    }
-    Object.values(checksAdd).forEach(cb => cb.addEventListener('change', drawAdditive));
-    drawAdditive();
-
-    // === Module 2 : Subtractive (CMJ) ===
-    const canvasSub = document.getElementById('subtractive');
-    const ctxSub = canvasSub.getContext('2d');
-    const checksSub = {
-      cyan: document.getElementById('cyan'),
-      magenta: document.getElementById('magenta'),
-      yellow: document.getElementById('yellow')
-    };
-    function drawSubtractive() {
-      let r = 255, g = 255, b = 255; // lumière blanche
-      if (checksSub.cyan.checked) r = 0;
-      if (checksSub.magenta.checked) g = 0;
-      if (checksSub.yellow.checked) b = 0;
-      ctxSub.fillStyle = `rgb(${r},${g},${b})`;
-      ctxSub.fillRect(0, 0, 400, 200);
-    }
-    Object.values(checksSub).forEach(cb => cb.addEventListener('change', drawSubtractive));
-    drawSubtractive();
-
-    // === Module 3 : Perception d’objets ===
-    const canvasPer = document.getElementById('perception');
-    const ctxPer = canvasPer.getContext('2d');
-    const objectSelect = document.getElementById('objectColor');
-    const lightSelect = document.getElementById('lightColor');
-
-    function drawPerception() {
-      let object = objectSelect.value;
-      let light = lightSelect.value;
-
-      let colors = {
-        red: [255,0,0],
-        green: [0,255,0],
-        blue: [0,0,255],
-        yellow: [255,255,0],
-        white: [255,255,255]
-      };
-      let objRGB = colors[object];
-      let lightRGB = colors[light];
-
-      let result = [
-        objRGB[0] > 0 ? lightRGB[0] : 0,
-        objRGB[1] > 0 ? lightRGB[1] : 0,
-        objRGB[2] > 0 ? lightRGB[2] : 0
-      ];
-
-      ctxPer.fillStyle = `rgb(${result[0]},${result[1]},${result[2]})`;
-      ctxPer.fillRect(0, 0, 200, 200);
-    }
-    objectSelect.addEventListener('change', drawPerception);
-    lightSelect.addEventListener('change', drawPerception);
-    drawPerception();
-  </script>
-</body>
-</html>
-
-<!-- Protection contre les raccourcis et le clic droit -->
 <script>
-document.addEventListener("keydown", function(event) {
-    if (event.key === "F12") {
-        event.preventDefault();
-    }
-
-    if (event.ctrlKey && event.shiftKey &&
-        ["I", "J", "C"].includes(event.key.toUpperCase())) {
-        event.preventDefault();
-    }
-
-    if (event.ctrlKey && event.key.toUpperCase() === "U") {
-        event.preventDefault();
-    }
-});
-
-document.addEventListener("contextmenu", function(event) {
-    event.preventDefault();
-});
+// Obfuscated loader with UTF-8 decoding support
+const data = "PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImZyIj4KPGhlYWQ+CiAgPG1ldGEgY2hhcnNldD0iVVRGLTgiPgogIDx0aXRsZT5NaXNzaW9uIENvdWxldXIg4oCTIFZlcnNpb24gTHVkaXF1ZTwvdGl0bGU+CiAgPHN0eWxlPgogICAgYm9keSB7IGZvbnQtZmFtaWx5OiAnVHJlYnVjaGV0IE1TJywgc2Fucy1zZXJpZjsgYmFja2dyb3VuZDogIzEyMTIxMjsgY29sb3I6ICNmMGYwZjA7IHRleHQtYWxpZ246IGNlbnRlcjsgbWFyZ2luOiAwOyB9CiAgICBoMSB7IGNvbG9yOiAjZmZjYzAwOyBwYWRkaW5nOiAyMHB4OyB0ZXh0LXNoYWRvdzogMnB4IDJweCA0cHggIzAwMDsgfQogICAgc2VjdGlvbiB7IG1hcmdpbjogMzBweCBhdXRvOyBwYWRkaW5nOiAyMHB4OyBiYWNrZ3JvdW5kOiAjMWUxZTFlOyBib3JkZXItcmFkaXVzOiAxNXB4OyB3aWR0aDogODUlOyBib3gtc2hhZG93OiAwIDAgMjBweCByZ2JhKDI1NSwyNTUsMjU1LDAuMSk7IH0KICAgIGgyIHsgY29sb3I6ICMwMGU1ZmY7IHRleHQtc2hhZG93OiAxcHggMXB4IDNweCAjMDAwOyB9CiAgICBjYW52YXMgeyBib3JkZXI6IDJweCBzb2xpZCAjNTU1OyBtYXJnaW4tdG9wOiAxNXB4OyBib3JkZXItcmFkaXVzOiAxMHB4OyB0cmFuc2l0aW9uOiB0cmFuc2Zvcm0gMC4zcyBlYXNlOyB9CiAgICBjYW52YXM6aG92ZXIgeyB0cmFuc2Zvcm06IHNjYWxlKDEuMDUpOyB9CiAgICAuY29udHJvbHMgeyBtYXJnaW46IDE1cHg7IH0KICAgIGxhYmVsIHsgbWFyZ2luOiAwIDE1cHg7IGZvbnQtc2l6ZTogMS4xZW07IGN1cnNvcjogcG9pbnRlcjsgfQogICAgaW5wdXRbdHlwZT0iY2hlY2tib3giXSwgc2VsZWN0IHsgdHJhbnNmb3JtOiBzY2FsZSgxLjIpOyBtYXJnaW4tbGVmdDogOHB4OyB9CiAgICBzZWxlY3QgeyBwYWRkaW5nOiA1cHg7IGJvcmRlci1yYWRpdXM6IDVweDsgYm9yZGVyOiBub25lOyB9CiAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KICA8aDE+8J+OriBNaXNzaW9uIENvdWxldXIg4oCTIFN5bnRow6hzZSBBZGRpdGl2ZSBldCBTb3VzdHJhY3RpdmUgPHNwYW4gc3R5bGU9ImRpc3BsYXk6YmxvY2s7IGZvbnQtc2l6ZToxNXB4OyBmb250LXdlaWdodDpub3JtYWw7Ij4KICAgIChEZXZlbG9wZWQgYnkgUHJvZi4gQUwgS1dBVExJKSAKICA8L3NwYW4+CiAgPHNwYW4gc3R5bGU9ImRpc3BsYXk6YmxvY2s7IGZvbnQtc2l6ZToxNXB4OyBmb250LXdlaWdodDpub3JtYWw7Ij4KICAgIEUtbWFpbDogZHIuYWxrd2F0bGlAZ21haWwuY29tCiAgPC9zcGFuPgogPC9oMT4KCiAgPCEtLSBNb2R1bGUgMSAtLT4KICA8c2VjdGlvbj4KICAgIDxoMj7wn4yIIFN5bnRow6hzZSBhZGRpdGl2ZSAoUlZCKTwvaDI+CiAgICA8cD5BY3RpdmUgbGVzIHByb2plY3RldXJzIGRlIGx1bWnDqHJlIHBvdXIgdm9pciBsZXMgbcOpbGFuZ2VzIDo8L3A+CiAgICA8ZGl2IGNsYXNzPSJjb250cm9scyI+CiAgICAgIDxsYWJlbCBzdHlsZT0iY29sb3I6I2ZmNDQ0NDsiPjxpbnB1dCB0eXBlPSJjaGVja2JveCIgaWQ9InJlZCI+IFJvdWdlPC9sYWJlbD4KICAgICAgPGxhYmVsIHN0eWxlPSJjb2xvcjojNDRmZjQ0OyI+PGlucHV0IHR5cGU9ImNoZWNrYm94IiBpZD0iZ3JlZW4iPiBWZXJ0PC9sYWJlbD4KICAgICAgPGxhYmVsIHN0eWxlPSJjb2xvcjojNDQ4OGZmOyI+PGlucHV0IHR5cGU9ImNoZWNrYm94IiBpZD0iYmx1ZSI+IEJsZXU8L2xhYmVsPgogICAgPC9kaXY+CiAgICA8Y2FudmFzIGlkPSJhZGRpdGl2ZSIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiPjwvY2FudmFzPgogIDwvc2VjdGlvbj4KCiAgPCEtLSBNb2R1bGUgMiAtLT4KICA8c2VjdGlvbj4KICAgIDxoMj7wn6eqIFN5bnRow6hzZSBzb3VzdHJhY3RpdmUgKENNSik8L2gyPgogICAgPHA+QWpvdXRlIGRlcyBmaWx0cmVzIGNvbG9yw6lzIGRldmFudCBsYSBsdW1pw6hyZSA6PC9wPgogICAgPGRpdiBjbGFzcz0iY29udHJvbHMiPgogICAgICA8bGFiZWwgc3R5bGU9ImNvbG9yOiMwMGZmZmY7Ij48aW5wdXQgdHlwZT0iY2hlY2tib3giIGlkPSJjeWFuIj4gQ3lhbjwvbGFiZWw+CiAgICAgIDxsYWJlbCBzdHlsZT0iY29sb3I6I2ZmNDRmZjsiPjxpbnB1dCB0eXBlPSJjaGVja2JveCIgaWQ9Im1hZ2VudGEiPiBNYWdlbnRhPC9sYWJlbD4KICAgICAgPGxhYmVsIHN0eWxlPSJjb2xvcjojZmZmZjQ0OyI+PGlucHV0IHR5cGU9ImNoZWNrYm94IiBpZD0ieWVsbG93Ij4gSmF1bmU8L2xhYmVsPgogICAgPC9kaXY+CiAgICA8Y2FudmFzIGlkPSJzdWJ0cmFjdGl2ZSIgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiPjwvY2FudmFzPgogIDwvc2VjdGlvbj4KCiAgPCEtLSBNb2R1bGUgMyAtLT4KICA8c2VjdGlvbj4KICAgIDxoMj7wn5SOIFBlcmNlcHRpb24gZOKAmXVuIG9iamV0IGNvbG9yw6k8L2gyPgogICAgPHA+Q2hvaXNpcyB1biBvYmpldCBldCB1bmUgbHVtacOocmUgOjwvcD4KICAgIDxkaXYgY2xhc3M9ImNvbnRyb2xzIj4KICAgICAgPGxhYmVsPk9iamV0IDoKICAgICAgICA8c2VsZWN0IGlkPSJvYmplY3RDb2xvciI+CiAgICAgICAgICA8b3B0aW9uIHZhbHVlPSJyZWQiPlJvdWdlPC9vcHRpb24+CiAgICAgICAgICA8b3B0aW9uIHZhbHVlPSJncmVlbiI+VmVydDwvb3B0aW9uPgogICAgICAgICAgPG9wdGlvbiB2YWx1ZT0iYmx1ZSI+QmxldTwvb3B0aW9uPgogICAgICAgICAgPG9wdGlvbiB2YWx1ZT0ieWVsbG93Ij5KYXVuZTwvb3B0aW9uPgogICAgICAgIDwvc2VsZWN0PgogICAgICA8L2xhYmVsPgogICAgICA8bGFiZWw+THVtacOocmUgOgogICAgICAgIDxzZWxlY3QgaWQ9ImxpZ2h0Q29sb3IiPgogICAgICAgICAgPG9wdGlvbiB2YWx1ZT0id2hpdGUiPkJsYW5jaGU8L29wdGlvbj4KICAgICAgICAgIDxvcHRpb24gdmFsdWU9InJlZCI+Um91Z2U8L29wdGlvbj4KICAgICAgICAgIDxvcHRpb24gdmFsdWU9ImdyZWVuIj5WZXJ0ZTwvb3B0aW9uPgogICAgICAgICAgPG9wdGlvbiB2YWx1ZT0iYmx1ZSI+QmxldWU8L29wdGlvbj4KICAgICAgICA8L3NlbGVjdD4KICAgICAgPC9sYWJlbD4KICAgIDwvZGl2PgogICAgPGNhbnZhcyBpZD0icGVyY2VwdGlvbiIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiPjwvY2FudmFzPgogIDwvc2VjdGlvbj4KCiAgPHNjcmlwdD4KICAgIC8vID09PSBNb2R1bGUgMSA6IEFkZGl0aXZlIChSVkIpID09PQogICAgY29uc3QgY2FudmFzQWRkID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2FkZGl0aXZlJyk7CiAgICBjb25zdCBjdHhBZGQgPSBjYW52YXNBZGQuZ2V0Q29udGV4dCgnMmQnKTsKICAgIGNvbnN0IGNoZWNrc0FkZCA9IHsKICAgICAgcmVkOiBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgncmVkJyksCiAgICAgIGdyZWVuOiBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZ3JlZW4nKSwKICAgICAgYmx1ZTogZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2JsdWUnKQogICAgfTsKICAgIGZ1bmN0aW9uIGRyYXdBZGRpdGl2ZSgpIHsKICAgICAgY3R4QWRkLmZpbGxTdHlsZSA9ICJibGFjayI7CiAgICAgIGN0eEFkZC5maWxsUmVjdCgwLCAwLCA0MDAsIDQwMCk7CiAgICAgIGlmIChjaGVja3NBZGQucmVkLmNoZWNrZWQpIHsKICAgICAgICBjdHhBZGQuZmlsbFN0eWxlID0gInJnYmEoMjU1LDAsMCwwLjUpIjsKICAgICAgICBjdHhBZGQuYmVnaW5QYXRoKCk7IGN0eEFkZC5hcmMoMjAwLCAxNTAsIDEwMCwgMCwgTWF0aC5QSSoyKTsgY3R4QWRkLmZpbGwoKTsKICAgICAgfQogICAgICBpZiAoY2hlY2tzQWRkLmdyZWVuLmNoZWNrZWQpIHsKICAgICAgICBjdHhBZGQuZmlsbFN0eWxlID0gInJnYmEoMCwyNTUsMCwwLjUpIjsKICAgICAgICBjdHhBZGQuYmVnaW5QYXRoKCk7IGN0eEFkZC5hcmMoMTUwLCAyNTAsIDEwMCwgMCwgTWF0aC5QSSoyKTsgY3R4QWRkLmZpbGwoKTsKICAgICAgfQogICAgICBpZiAoY2hlY2tzQWRkLmJsdWUuY2hlY2tlZCkgewogICAgICAgIGN0eEFkZC5maWxsU3R5bGUgPSAicmdiYSgwLDAsMjU1LDAuNSkiOwogICAgICAgIGN0eEFkZC5iZWdpblBhdGgoKTsgY3R4QWRkLmFyYygyNTAsIDI1MCwgMTAwLCAwLCBNYXRoLlBJKjIpOyBjdHhBZGQuZmlsbCgpOwogICAgICB9CiAgICB9CiAgICBPYmplY3QudmFsdWVzKGNoZWNrc0FkZCkuZm9yRWFjaChjYiA9PiBjYi5hZGRFdmVudExpc3RlbmVyKCdjaGFuZ2UnLCBkcmF3QWRkaXRpdmUpKTsKICAgIGRyYXdBZGRpdGl2ZSgpOwoKICAgIC8vID09PSBNb2R1bGUgMiA6IFN1YnRyYWN0aXZlIChDTUopID09PQogICAgY29uc3QgY2FudmFzU3ViID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3N1YnRyYWN0aXZlJyk7CiAgICBjb25zdCBjdHhTdWIgPSBjYW52YXNTdWIuZ2V0Q29udGV4dCgnMmQnKTsKICAgIGNvbnN0IGNoZWNrc1N1YiA9IHsKICAgICAgY3lhbjogZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2N5YW4nKSwKICAgICAgbWFnZW50YTogZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ21hZ2VudGEnKSwKICAgICAgeWVsbG93OiBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgneWVsbG93JykKICAgIH07CiAgICBmdW5jdGlvbiBkcmF3U3VidHJhY3RpdmUoKSB7CiAgICAgIGxldCByID0gMjU1LCBnID0gMjU1LCBiID0gMjU1OyAvLyBsdW1pw6hyZSBibGFuY2hlCiAgICAgIGlmIChjaGVja3NTdWIuY3lhbi5jaGVja2VkKSByID0gMDsKICAgICAgaWYgKGNoZWNrc1N1Yi5tYWdlbnRhLmNoZWNrZWQpIGcgPSAwOwogICAgICBpZiAoY2hlY2tzU3ViLnllbGxvdy5jaGVja2VkKSBiID0gMDsKICAgICAgY3R4U3ViLmZpbGxTdHlsZSA9IGByZ2IoJHtyfSwke2d9LCR7Yn0pYDsKICAgICAgY3R4U3ViLmZpbGxSZWN0KDAsIDAsIDQwMCwgMjAwKTsKICAgIH0KICAgIE9iamVjdC52YWx1ZXMoY2hlY2tzU3ViKS5mb3JFYWNoKGNiID0+IGNiLmFkZEV2ZW50TGlzdGVuZXIoJ2NoYW5nZScsIGRyYXdTdWJ0cmFjdGl2ZSkpOwogICAgZHJhd1N1YnRyYWN0aXZlKCk7CgogICAgLy8gPT09IE1vZHVsZSAzIDogUGVyY2VwdGlvbiBk4oCZb2JqZXRzID09PQogICAgY29uc3QgY2FudmFzUGVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3BlcmNlcHRpb24nKTsKICAgIGNvbnN0IGN0eFBlciA9IGNhbnZhc1Blci5nZXRDb250ZXh0KCcyZCcpOwogICAgY29uc3Qgb2JqZWN0U2VsZWN0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ29iamVjdENvbG9yJyk7CiAgICBjb25zdCBsaWdodFNlbGVjdCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdsaWdodENvbG9yJyk7CgogICAgZnVuY3Rpb24gZHJhd1BlcmNlcHRpb24oKSB7CiAgICAgIGxldCBvYmplY3QgPSBvYmplY3RTZWxlY3QudmFsdWU7CiAgICAgIGxldCBsaWdodCA9IGxpZ2h0U2VsZWN0LnZhbHVlOwoKICAgICAgbGV0IGNvbG9ycyA9IHsKICAgICAgICByZWQ6IFsyNTUsMCwwXSwKICAgICAgICBncmVlbjogWzAsMjU1LDBdLAogICAgICAgIGJsdWU6IFswLDAsMjU1XSwKICAgICAgICB5ZWxsb3c6IFsyNTUsMjU1LDBdLAogICAgICAgIHdoaXRlOiBbMjU1LDI1NSwyNTVdCiAgICAgIH07CiAgICAgIGxldCBvYmpSR0IgPSBjb2xvcnNbb2JqZWN0XTsKICAgICAgbGV0IGxpZ2h0UkdCID0gY29sb3JzW2xpZ2h0XTsKCiAgICAgIGxldCByZXN1bHQgPSBbCiAgICAgICAgb2JqUkdCWzBdID4gMCA/IGxpZ2h0UkdCWzBdIDogMCwKICAgICAgICBvYmpSR0JbMV0gPiAwID8gbGlnaHRSR0JbMV0gOiAwLAogICAgICAgIG9ialJHQlsyXSA+IDAgPyBsaWdodFJHQlsyXSA6IDAKICAgICAgXTsKCiAgICAgIGN0eFBlci5maWxsU3R5bGUgPSBgcmdiKCR7cmVzdWx0WzBdfSwke3Jlc3VsdFsxXX0sJHtyZXN1bHRbMl19KWA7CiAgICAgIGN0eFBlci5maWxsUmVjdCgwLCAwLCAyMDAsIDIwMCk7CiAgICB9CiAgICBvYmplY3RTZWxlY3QuYWRkRXZlbnRMaXN0ZW5lcignY2hhbmdlJywgZHJhd1BlcmNlcHRpb24pOwogICAgbGlnaHRTZWxlY3QuYWRkRXZlbnRMaXN0ZW5lcignY2hhbmdlJywgZHJhd1BlcmNlcHRpb24pOwogICAgZHJhd1BlcmNlcHRpb24oKTsKICA8L3NjcmlwdD4KPC9ib2R5Pgo8L2h0bWw+Cgo8IS0tIFByb3RlY3Rpb24gY29udHJlIGxlcyByYWNjb3VyY2lzIGV0IGxlIGNsaWMgZHJvaXQgLS0+CjxzY3JpcHQ+CmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoImtleWRvd24iLCBmdW5jdGlvbihldmVudCkgewogICAgaWYgKGV2ZW50LmtleSA9PT0gIkYxMiIpIHsKICAgICAgICBldmVudC5wcmV2ZW50RGVmYXVsdCgpOwogICAgfQoKICAgIGlmIChldmVudC5jdHJsS2V5ICYmIGV2ZW50LnNoaWZ0S2V5ICYmCiAgICAgICAgWyJJIiwgIkoiLCAiQyJdLmluY2x1ZGVzKGV2ZW50LmtleS50b1VwcGVyQ2FzZSgpKSkgewogICAgICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7CiAgICB9CgogICAgaWYgKGV2ZW50LmN0cmxLZXkgJiYgZXZlbnQua2V5LnRvVXBwZXJDYXNlKCkgPT09ICJVIikgewogICAgICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7CiAgICB9Cn0pOwoKZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigiY29udGV4dG1lbnUiLCBmdW5jdGlvbihldmVudCkgewogICAgZXZlbnQucHJldmVudERlZmF1bHQoKTsKfSk7Cjwvc2NyaXB0Pgo8L2JvZHk+Cg==";
+const binary = atob(data);
+const bytes = new Uint8Array(binary.length);
+for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+}
+const decoded = new TextDecoder("utf-8").decode(bytes);
+document.open();
+document.write(decoded);
+document.close();
 </script>
 </body>
+</html>
